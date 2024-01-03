@@ -9,7 +9,7 @@ class Starmap:
         #camera params
         self.camera_position = vec3(0,0,500)
         self.camera_orientation = [0,0,0]
-        self.canvas_position = vec3(0,0,600)
+        self.canvas_position = vec3(0,0,1500)
         
     def draw_starmap(self):
         self.map.fill((0,0,0))
@@ -18,6 +18,27 @@ class Starmap:
             star.distance = distance(star, self.camera_position)
         
         self.stars.sort(key = lambda x: x.distance, reverse = True) #python's sort method is faster than inorder insertion
+        
+        #axis lines
+        lines = []
+        
+        lines.append(line(vec3(0,0,0), vec3(255,0,0)))
+        lines.append(line(vec3(0,0,0), vec3(0,255,0)))
+        lines.append(line(vec3(0,0,0), vec3(0,0,255)))
+        lines.append(line(vec3(0,255,0), vec3(255,255,0)))
+        lines.append(line(vec3(0,255,0), vec3(0,255,255)))
+        lines.append(line(vec3(255,0,0), vec3(255,0,255)))
+        lines.append(line(vec3(255,0,0), vec3(255,255,0)))
+        lines.append(line(vec3(255,255,255), vec3(255,0,255)))
+        lines.append(line(vec3(255,255,255), vec3(0,255,255)))
+        lines.append(line(vec3(255,255,255), vec3(255,255,0)))
+        lines.append(line(vec3(0,255,255), vec3(0,0,255)))
+        lines.append(line(vec3(255,0,255), vec3(0,0,255)))
+        
+        for l in lines:
+            l.draw(self.map, self.camera_position, 
+                                    self.camera_orientation, 
+                                    self.canvas_position)
         
         for star in self.stars:
             pygame.draw.circle(self.map, 
@@ -93,6 +114,20 @@ class vec3:
         by = (ez/dz) * dy + ey
         
         return (bx, by)
+
+class line:
+    def __init__(self, p1, p2):
+        self.p1 = p1
+        self.p2 = p2
+        
+    def draw(self, surface, camera_position, camera_orientation, canvas_position):
+        pr1 = self.p1.project(camera_position, 
+                                camera_orientation, 
+                                canvas_position)
+        pr2 = self.p2.project(camera_position, 
+                                camera_orientation, 
+                                canvas_position)
+        pygame.draw.line(surface, (255, 255, 255), (pr1[0], pr1[1]), (pr2[0], pr2[1]), 1)
 
 def distance(a, b):
     return sqrt((b.x - a.x) ** 2 + (b.y - a.y) ** 2 + (b.z - a.z) ** 2)

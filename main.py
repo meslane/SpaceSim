@@ -21,7 +21,7 @@ def main():
     
     random.seed(0)
     
-    for i in range(100):
+    for i in range(255):
         s = starmap.Star(random.randint(0,255),random.randint(0,255),random.randint(0,255))
         s.color = (random.randint(100,255),random.randint(100,255),random.randint(100,255))
         map.stars.append(s)
@@ -50,7 +50,7 @@ def main():
         
         #lateral + forward motion
         motion = [0,0] #x,z
-        move_mag = 0.1
+        move_mag = 0.25
         
         if keys[pygame.K_w]:
             motion[1] = move_mag
@@ -66,10 +66,11 @@ def main():
         if keys[pygame.K_f]:
             map.camera_position.y += move_mag
             
-        map.camera_position.z += motion[1] * cos(map.camera_orientation[1])
         map.camera_position.x += motion[1] * sin(map.camera_orientation[1])
         map.camera_position.y -= motion[1] * sin(map.camera_orientation[0])
+        map.camera_position.z += motion[1] * cos(map.camera_orientation[1])
         map.camera_position.x += motion[0] * sin(map.camera_orientation[1] + radians(90))
+        #map.camera_position.y -= motion[0] * sin(map.camera_orientation[1] + radians(90))
         map.camera_position.z += motion[0] * cos(map.camera_orientation[1] + radians(90))   
             
         if locked:
