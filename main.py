@@ -22,9 +22,12 @@ def main():
     random.seed(0)
     
     for i in range(255):
-        s = starmap.Star(random.randint(0,255),random.randint(0,255),random.randint(0,255))
+        s = starmap.Star(random.randint(-127,127),random.randint(-127,127),random.randint(-127,127))
         s.color = (random.randint(100,255),random.randint(100,255),random.randint(100,255))
-        map.stars.append(s)
+        map.objects.append(s)
+    
+    map.objects.append(starmap.line(map.objects[0], map.objects[1], t=2))
+    map.objects.append(starmap.line(map.objects[1], map.objects[2], t=2))
     
     #main loop
     locked = False
@@ -35,16 +38,23 @@ def main():
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 exit()
-            if event.type == pygame.KEYDOWN:
+            elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
                     locked = False
                     pygame.mouse.set_visible(True)
                     pygame.event.set_grab(False)
-            if event.type == pygame.MOUSEBUTTONDOWN:
+            elif event.type == pygame.MOUSEBUTTONDOWN:
                 if not locked:
                     locked = True
                     pygame.mouse.set_visible(False)
                     pygame.event.set_grab(True)
+            elif event.type == pygame.MOUSEWHEEL:
+                if event.y > 0 and map.canvas_position.z > 0:
+                    map.canvas_position.z -= 50
+                elif event.y < 0:
+                    map.canvas_position.z += 50 #zoom
+                    
+                print(map.canvas_position.z)
             
         keys = pygame.key.get_pressed()
         
@@ -65,14 +75,37 @@ def main():
             map.camera_position.y -= move_mag
         if keys[pygame.K_f]:
             map.camera_position.y += move_mag
-            
+        
         map.camera_position.x += motion[1] * sin(map.camera_orientation[1])
         map.camera_position.y -= motion[1] * sin(map.camera_orientation[0])
         map.camera_position.z += motion[1] * cos(map.camera_orientation[1])
         map.camera_position.x += motion[0] * sin(map.camera_orientation[1] + radians(90))
         #map.camera_position.y -= motion[0] * sin(map.camera_orientation[1] + radians(90))
         map.camera_position.z += motion[0] * cos(map.camera_orientation[1] + radians(90))   
+        
+        max_distance = 200
+        
+        #position/rotation limits
+        if map.camera_position.x > max_distance:
+            map.camera_position.x = max_distance
+        elif map.camera_position.x < -max_distance:
+            map.camera_position.x = -max_distance
             
+        if map.camera_position.y > max_distance:
+            map.camera_position.y = max_distance
+        elif map.camera_position.y < -max_distance:
+            map.camera_position.y = -max_distance
+            
+        if map.camera_position.z > max_distance:
+            map.camera_position.z = max_distance
+        elif map.camera_position.z < -max_distance:
+            map.camera_position.z = -max_distance
+        
+        if map.camera_orientation[0] > pi/2:
+            map.camera_orientation[0] = pi/2
+        elif map.camera_orientation[0] < -pi/2:
+            map.camera_orientation[0] = -pi/2
+        
         if locked:
             pygame.mouse.set_pos(w_screen//2,h_screen//2)
             
@@ -87,11 +120,15 @@ def main():
         
         ppos = font.render("{}".format(map.camera_position), False, (255, 255, 255))
         pang = font.render("{}".format(map.camera_orientation), False, (255, 255, 255))
+        pang_rect = font.render("{}".format(starmap.spherical_to_rect(1, map.camera_orientation[0], map.camera_orientation[1])), 
+                                False, 
+                                (255, 255, 255))
         fps_text = font.render("{}".format(fps), False, (255, 255, 255))
         
         map.map.blit(ppos, (20,10))
         map.map.blit(pang, (20,20))
-        map.map.blit(fps_text, (20,30))
+        map.map.blit(pang_rect, (20,30))
+        map.map.blit(fps_text, (20,40))
         
         pygame.draw.line(map.map, (255, 255, 255), (w_screen//2 - 5, h_screen//2), (w_screen//2 + 5, h_screen//2), 1)
         pygame.draw.line(map.map, (255, 255, 255), (w_screen//2, h_screen//2 - 5), (w_screen//2, h_screen//2 + 5), 1)
