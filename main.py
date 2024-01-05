@@ -4,6 +4,7 @@ import random
 import time
 
 import starmap
+import geometry
 
 w_screen = 320 * 2
 h_screen = 180 * 2
@@ -24,10 +25,11 @@ def main():
     for i in range(255):
         s = starmap.Star(random.randint(-127,127),random.randint(-127,127),random.randint(-127,127))
         s.color = (random.randint(100,255),random.randint(100,255),random.randint(100,255))
+        s.name = "S-{}".format(i)
         map.objects.append(s)
     
-    map.objects.append(starmap.line(map.objects[0], map.objects[1], t=2))
-    map.objects.append(starmap.line(map.objects[1], map.objects[2], t=2))
+    #map.objects.append(geometry.line(map.objects[0], map.objects[1], t=2))
+    #map.objects.append(geometry.line(map.objects[1], map.objects[2], t=2))
     
     #main loop
     locked = False
@@ -61,6 +63,9 @@ def main():
         #lateral + forward motion
         motion = [0,0] #x,z
         move_mag = 0.25
+        
+        if keys[pygame.K_LSHIFT]:
+            move_mag = 0.5
         
         if keys[pygame.K_w]:
             motion[1] = move_mag
@@ -120,7 +125,7 @@ def main():
         
         ppos = font.render("{}".format(map.camera_position), False, (255, 255, 255))
         pang = font.render("{}".format(map.camera_orientation), False, (255, 255, 255))
-        pang_rect = font.render("{}".format(starmap.spherical_to_rect(1, map.camera_orientation[0], map.camera_orientation[1])), 
+        pang_rect = font.render("{}".format(geometry.spherical_to_rect(1, map.camera_orientation[0], map.camera_orientation[1])), 
                                 False, 
                                 (255, 255, 255))
         fps_text = font.render("{}".format(fps), False, (255, 255, 255))

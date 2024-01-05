@@ -1,4 +1,7 @@
 ~== 2024-01-02 ==~
+    -Should have star names pop up as text if you get within a certian distance of a star
+
+~== 2024-01-02 ==~
     -The starcube is real
     -Need to add lines to painter's algorithm so they occlude stars properly
     -Find way to make 3D faster (numpy maybe?)
