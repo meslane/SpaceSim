@@ -31,6 +31,7 @@ class Starmap:
         #text
         self.font = pygame.font.SysFont("Consolas", 11)
         self.name_draw_distace = 170
+        self.info_draw_distace = 50
    
         print(self.x_axis.color)
         
@@ -75,8 +76,15 @@ class Starmap:
                         name_text = self.font.render("{}".format(obj.name), False, (255, 255, 255))
                         text_size = self.font.size("{}".format(obj.name))
                         self.map.blit(name_text, (screen_pos[0]  - text_size[0]//2, 
-                                                    screen_pos[1] - size - text_size[0]//2 - 5))
+                                                    screen_pos[1] - size - text_size[1]//2 - 10))
                     
+                    if obj.distance < self.info_draw_distace: #draw info if close enough
+                        string = "Class {}, R = {} sols".format(obj.star_class, obj.size)
+                        info_text = self.font.render(string, False, (255, 255, 255))
+                        text_size = self.font.size(string)
+                        self.map.blit(info_text, (screen_pos[0]  - text_size[0]//2, 
+                                                    screen_pos[1] + size + text_size[1]//2 + 5))
+                        
             elif type(obj) is geometry.line:
                 dir = geometry.directionVector(self.camera_position, geometry.midpoint(obj.p1, obj.p2))
             
@@ -103,6 +111,7 @@ class Starmap:
 class Star(geometry.vec3):
     def __init__(self, x, y, z):
         super().__init__(x,y,z)
+        self.star_class = 'G'
         self.color = (255,255,255)
         self.size = 2
         

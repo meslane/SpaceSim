@@ -5,6 +5,7 @@ import time
 
 import starmap
 import geometry
+import worldgen
 
 w_screen = 320 * 2
 h_screen = 180 * 2
@@ -23,13 +24,20 @@ def main():
     random.seed(0)
     
     for i in range(255):
-        s = starmap.Star(random.randint(-127,127),random.randint(-127,127),random.randint(-127,127))
-        s.color = (random.randint(100,255),random.randint(100,255),random.randint(100,255))
+        s = worldgen.generate_star(-127,127)
+        #s.color = (random.randint(100,255),random.randint(100,255),random.randint(100,255))
         s.name = "S-{}".format(i)
         map.objects.append(s)
     
     #map.objects.append(geometry.line(map.objects[0], map.objects[1], t=2))
     #map.objects.append(geometry.line(map.objects[1], map.objects[2], t=2))
+    
+    origin = starmap.Star(0,0,0)
+    origin.color = (255,237,227)
+    origin.size = 1
+    origin.name = "Homeworld"
+    
+    map.objects.append(origin)
     
     #main loop
     locked = False
