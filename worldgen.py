@@ -1,10 +1,38 @@
 import pygame
 import random
 
+import geometry
 import starmap
 
+#Keplerian orbital elements (https://en.wikipedia.org/wiki/Orbital_elements)
+class Keplerian:
+    def __init__(self):
+        self.e = 0 #eccentricity 
+        self.a = 0 #semi-major axis
+        
+        self.i = 0 #inclination
+        self.omega = 0 #longitude of ascending node
+        
+        self.w = 0 #argument of periapsis
+        self.theta = 0 #true anomaly
+
+class Star(geometry.vec3):
+    def __init__(self, x, y, z):
+        super().__init__(x,y,z)
+        self.star_class = 'G'
+        self.color = (255,255,255)
+        self.size = 2
+        
+        self.distance = 0
+        
+        self.name = "star"
+
+class Planet:
+    def __init__(self):
+        pass
+
 def generate_star(min_pos, max_pos):
-    s = starmap.Star(random.uniform(min_pos, max_pos),
+    s = Star(random.uniform(min_pos, max_pos),
                     random.uniform(min_pos, max_pos),
                     random.uniform(min_pos, max_pos))
     

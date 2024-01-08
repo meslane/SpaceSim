@@ -32,7 +32,7 @@ def main():
     #map.objects.append(geometry.line(map.objects[0], map.objects[1], t=2))
     #map.objects.append(geometry.line(map.objects[1], map.objects[2], t=2))
     
-    origin = starmap.Star(0,0,0)
+    origin = worldgen.Star(0,0,0)
     origin.color = (255,237,227)
     origin.size = 1
     origin.name = "Homeworld"
@@ -42,6 +42,7 @@ def main():
     #main loop
     locked = False
     fps = 0
+    tick = 0
     while True:
         startloop = time.time()
     
@@ -146,10 +147,20 @@ def main():
         pygame.draw.line(map.map, (255, 255, 255), (w_screen//2 - 5, h_screen//2), (w_screen//2 + 5, h_screen//2), 1)
         pygame.draw.line(map.map, (255, 255, 255), (w_screen//2, h_screen//2 - 5), (w_screen//2, h_screen//2 + 5), 1)
     
+        #ellipse
+        #test_ellipse = geometry.ellipse(50 * sin(radians(tick % 180)), 50, tick%360, (w_screen//2,h_screen//2), width=2)
+        #test_ellipse.draw(map.map)
+        
+        test_ellipse = geometry.ellipse_3D(geometry.vec3(20,10,10), geometry.vec3(10,20,10), geometry.vec3(10,10,10))
+        test_ellipse.draw(map.map, map.camera_position, map.camera_orientation, map.canvas_position,
+                            xoffset = w_screen//2, yoffset = h_screen//2)
+    
+        #this goes last
         window.blit(pygame.transform.scale(map.map, window.get_rect().size), (0, 0))
         pygame.display.flip()
         
         fps = 1/(time.time() - startloop + 0.01)
+        tick += 1
 
 if __name__ == '__main__':
     main()

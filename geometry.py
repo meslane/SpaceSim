@@ -4,6 +4,9 @@ from math import *
 def distance(a, b): #find distance between 2 points
     return sqrt((b.x - a.x) ** 2 + (b.y - a.y) ** 2 + (b.z - a.z) ** 2)
 
+def distance2D(a, b):
+    return sqrt((b[0] - a[0]) ** 2 + (b[1] - a[1]) ** 2)
+
 def midpoint(a, b): #find midpoint of line
     return vec3((a.x + b.x)/2, (a.y + b.y)/2, (a.z + b.z)/2)
 
@@ -30,8 +33,6 @@ def distance_to_line(l, p): #get distance between line l and point p
     x0 = p
 
     d = mag(crossProduct(x2 - x1, x1 - x0))/mag(x2 - x1)
-    
-    #print(d)
     return d
     
 def spherical_to_rect(rho, theta, phi): #convert spherical coords to x,y,z
@@ -132,3 +133,63 @@ class line:
         
     def draw_literal(self, surface): #project to screen based on x/y only
         pygame.draw.line(surface, self.color, (self.p1.x, self.p1.y), (self.p2.x, self.p2.y), 1)
+        
+class ellipse:
+    def __init__(self, v, h, rot, center, **kwargs):
+        self.v = v #length of vertical axis
+        self.h = h #length of horizontal axis
+        self.rot = rot #ellipse rotation on screen
+        self.center = center #center of ellipse on screen
+        
+        self.color = kwargs.get('color', (255,255,255))
+        self.width = kwargs.get('width', 1)
+        
+        self.rect = pygame.Rect(self.center[0] - self.h, 
+                                self.center[1] - self.v,
+                                2 * self.h,
+                                2 * self.v)
+                                
+        self.surface_rect = pygame.Rect(0, 
+                                0,
+                                2 * self.h,
+                                2 * self.v)
+                                
+        self.ellipse_surface = pygame.Surface(self.rect.size, pygame.SRCALPHA)
+        
+    def draw(self, surface):
+        pygame.draw.ellipse(self.ellipse_surface, self.color, self.surface_rect, self.width)
+        rotated = pygame.transform.rotate(self.ellipse_surface, self.rot)
+        surface.blit(rotated, rotated.get_rect(center=self.rect.center))
+        
+class ellipse_3D: #BROKEN
+    '''
+    a = first point on ellipse in 3D space
+    b = second point on ellipse in 3D space
+    c = center of the ellipse in 3D space
+    
+    other points in the ellipse are mirrored across the minor and major axes
+    '''
+    def __init__(self, a: vec3, b: vec3, c: vec3):
+        self.a = a
+        self.b = b
+        self.c = c
+        
+    def draw(self, surface, camera_position, camera_orientation, canvas_position, **kwargs):
+        xoffset = kwargs.get('xoffset', 0)
+        yoffset = kwargs.get('yoffset', 0)
+    
+        p1 = self.a.project(camera_position, camera_orientation, canvas_position)
+        p2 = self.b.project(camera_position, camera_orientation, canvas_position)
+        center = self.c.project(camera_position, camera_orientation, canvas_position)
+        
+        p1 = (p1[0] + xoffset, p1[1] + yoffset)
+        p2 = (p2[0] + xoffset, p2[1] + yoffset)
+        center = (center[0] + xoffset, center[1] + yoffset)
+        
+        angle = atan2(p2[1] - center[1], p2[0] - center[0])
+        h = distance2D(p1, center)
+        v = distance2D(p2, center)
+        
+        ell = ellipse(v,h,angle,center,width=2)
+        ell.draw(surface)
+        

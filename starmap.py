@@ -2,6 +2,7 @@ import pygame
 from math import *
 
 import geometry
+import worldgen
 
 class Starmap:
     def __init__(self, size):
@@ -22,18 +23,10 @@ class Starmap:
         self.y_axis = geometry.line(self.compass_origin, self.compass_origin)
         self.z_axis = geometry.line(self.compass_origin, self.compass_origin)
         
-        '''
-        self.x_axis.color = (255,0,0)
-        self.y_axis.color = (0,255,0)
-        self.z_axis.color = (0,0,255)
-        '''
-        
         #text
         self.font = pygame.font.SysFont("Consolas", 11)
         self.name_draw_distace = 170
         self.info_draw_distace = 50
-   
-        print(self.x_axis.color)
         
     def draw_starmap(self):
         self.map.fill((0,0,0))
@@ -43,7 +36,7 @@ class Starmap:
         
         #painter's algorithm
         for obj in self.objects:
-            if type(obj) is Star:
+            if type(obj) is worldgen.Star:
                 obj.distance = geometry.distance(obj, self.camera_position)
             elif type(obj) is geometry.line:
                 #obj.distance = distance(midpoint(obj.p1, obj.p2), self.camera_position)
@@ -52,7 +45,7 @@ class Starmap:
         self.objects.sort(key = lambda x: x.distance, reverse = True) #python's sort method is faster than inorder insertion
         
         for obj in self.objects:
-            if type(obj) is Star:
+            if type(obj) is worldgen.Star:
                 obj_dir = geometry.directionVector(self.camera_position, obj)
             
                 if geometry.dotProduct(obj_dir, v_camera) > 0: #only draw if in front of player
@@ -107,14 +100,3 @@ class Starmap:
         self.x_axis.draw_literal(self.map)
         self.y_axis.draw_literal(self.map)
         self.z_axis.draw_literal(self.map)
-
-class Star(geometry.vec3):
-    def __init__(self, x, y, z):
-        super().__init__(x,y,z)
-        self.star_class = 'G'
-        self.color = (255,255,255)
-        self.size = 2
-        
-        self.distance = 0
-        
-        self.name = "star"
